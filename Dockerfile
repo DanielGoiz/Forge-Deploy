@@ -1,16 +1,13 @@
-FROM ubuntu:latest AS build
+FROM maven:3.9.6-amazoncorretto-17 AS build
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
-COPY target .
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
 
 RUN apt-get install maven -y
-RUN mvn clean install
+RUN mvn clean install -DskipTests
 
-FROM openjdk:17-jdk-slim
-
-EXPOSE 8085
-
-COPY --from=build target/Forgek-0.0.1-SNAPSHOT.jar app.jar
-
-ENTRYPOINT ["java", "-jar", "app.jar" ]
+FROM amazoncorretto:17
+WORKDIR /app
+COPY --from=build /app/target/Forgek-0.0.1-SNAPSHOT.jar /app/Forgek-0.0.1-SNAPSHOT.jar
+ENTRYPOINT ["java", "-jar", "/app/Forgek-0.0.1-SNAPSHOT.jar"]
