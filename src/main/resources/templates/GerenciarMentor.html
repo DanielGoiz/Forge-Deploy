@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciamento de Mentores</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .bg-image {
+            background-image: url("../lala.png"); /* Ajuste o caminho conforme necessário */
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* Adiciona transparência ao fundo do container */
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px; /* Ajuste conforme necessário */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body class="bg-image">
+<div class="container">
+    <h2>Gerenciamento de Mentores</h2>
+    <div class="search-bar">
+        <input type="text" id="searchInput" class="form-control" placeholder="Pesquisar mentor...">
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Especialidade</th>
+            <th>Empresa</th>
+            <th>Horário</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody id="mentorTableBody">
+        <!-- Os mentores serão inseridos aqui -->
+
+
+        </tbody>
+
+    </table>
+    <a href="CadastrarMentor.html" class="btn btn-primary mb-3">Adicionar Novo Mentor</a>
+    <a href="index.html" class="btn btn-dark mb-3">Voltar</a>
+</div>
+<!-- Modal de Edição de Mentor -->
+<div class="modal fade" id="editMentorModal" tabindex="-1" role="dialog" aria-labelledby="editMentorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editMentorModalLabel">Editar Mentor</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulário de Edição -->
+                <form id="editMentorForm">
+                    <div class="form-group">
+                        <label for="mentorNome">Nome</label>
+                        <input type="text" class="form-control" id="mentorNome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mentorEmail">Email</label>
+                        <input type="email" class="form-control" id="mentorEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mentorEspecialidade">Especialidade</label>
+                        <input type="text" class="form-control" id="mentorEspecialidade" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mentorDiaDaSemana">Dia da Semana</label>
+                        <select class="form-control" id="mentorDiaDaSemana" required>
+                            <option value="Segunda-feira">Segunda-feira</option>
+                            <option value="Terça-feira">Terça-feira</option>
+                            <option value="Quarta-feira">Quarta-feira</option>
+                            <option value="Quinta-feira">Quinta-feira</option>
+                            <option value="Sexta-feira">Sexta-feira</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mentorHorarioInicio">Horário de Início</label>
+                        <input type="time" class="form-control" id="mentorHorarioInicio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mentorHorarioFim">Horário de Fim</label>
+                        <input type="time" class="form-control" id="mentorHorarioFim" required>
+                    </div>
+                    <!-- Adicione mais campos conforme necessário -->
+                    <input type="hidden" id="mentorId" value="">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" id="saveMentorChanges">Salvar mudanças</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap, jQuery e SweetAlert2 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        function carregarMentores() {
+            $.ajax({
+                url: 'http://localhost:8085/mentores', // Ajuste para a URL do seu endpoint
+                type: 'GET',
+                success: function(mentores) {
+                    var mentorTableBody = $('#mentorTableBody');
+                    mentorTableBody.empty();
+                    mentores.forEach(function(mentor) {
+                        mentorTableBody.append(
+                            '<tr>' +
+                            '<td>' + mentor.nome + '</td>' +
+                            '<td>' + mentor.email + '</td>' +
+                            '<td>' + mentor.especialidade + '</td>' +
+                            '<td>' + (mentor.empresa ? mentor.empresa.nome : 'Sem empresa') + '</td>' + // Verifica se mentor.empresa existe e então acessa mentor.empresa.nome
+                            '<td>' + mentor.horariodisponivel + '</td>' +
+                            '<td>' +
+                            '<button class="btn btn-primary edit-btn" data-id="' + mentor.id + '">Editar</button>' +
+                            ' <button class="btn btn-danger delete-btn" data-id="' + mentor.id + '">Deletar</button>' +
+                            '</td>' +
+                            '</tr>'
+                        );
+                    });
+                    attachDeleteHandlers();
+                    attachEditHandlers();
+                }
+            });
+        }
+
+        function attachDeleteHandlers() {
+            $('.delete-btn').on('click', function() {
+                var mentorId = $(this).data('id');
+                Swal.fire({
+                    title: 'Tem certeza?',
+                    text: "Você não poderá reverter isso!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sim, delete!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: 'http://localhost:8085/mentores/' + mentorId, // Ajuste para a URL do seu endpoint
+                            type: 'DELETE',
+                            success: function() {
+                                Swal.fire(
+                                    'Deletado!',
+                                    'O mentor foi deletado.',
+                                    'success'
+                                ).then(function() {
+                                    carregarMentores();
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        function attachEditHandlers() {
+            $('.edit-btn').on('click', function() {
+                var mentorId = $(this).data('id');
+                // Aqui você pode abrir um modal de edição ou redirecionar para uma página de edição
+                // com os detalhes do mentor para serem editados.
+            });
+        }
+
+        $('#searchInput').on('keyup', function() {
+            var value = $(this).val().toLowerCase();
+            $("#mentorTableBody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        carregarMentores();
+    });
+
+    function attachEditHandlers() {
+        $('.edit-btn').on('click', function() {
+            var mentorId = $(this).data('id');
+            // Buscar os detalhes do mentor pelo ID
+            $.ajax({
+                url: 'http://localhost:8085/mentores/' + mentorId, // Ajuste para a URL do seu endpoint
+                type: 'GET',
+                success: function(mentor) {
+                    // Preencher o formulário do modal com os dados do mentor
+                    $('#mentorId').val(mentor.id);
+                    $('#mentorNome').val(mentor.nome);
+                    $('#mentorEmail').val(mentor.email);
+                    $('#mentorEspecialidade').val(mentor.especialidade);
+                    // Supondo que mentor.diaDaSemana e mentor.horarioInicio/Fim existam
+                    $('#mentorDiaDaSemana').val(mentor.diaDaSemana);
+                    $('#mentorHorarioInicio').val(mentor.horarioInicio);
+                    $('#mentorHorarioFim').val(mentor.horarioFim);
+
+                    // Abrir o modal
+                    $('#editMentorModal').modal('show');
+                }
+            });
+        });
+    }
+
+    // Função para salvar as mudanças
+    $('#saveMentorChanges').on('click', function() {
+        var mentorId = $('#mentorId').val();
+        var mentorData = {
+            nome: $('#mentorNome').val(),
+            email: $('#mentorEmail').val(),
+            especialidade: $('#mentorEspecialidade').val(),
+            diaDaSemana: $('#mentorDiaDaSemana').val(),
+            horarioInicio: $('#mentorHorarioInicio').val(),
+            horarioFim: $('#mentorHorarioFim').val()
+        };
+        $.ajax({
+            url: 'http://localhost:8085/mentores/' + mentorId, // Ajuste para a URL do seu endpoint
+            type: 'PUT', // Ou PATCH, dependendo de como o backend espera receber a requisição
+            contentType: 'application/json',
+            data: JSON.stringify(mentorData),
+            success: function(response) {
+                $('#editMentorModal').modal('hide');
+                Swal.fire(
+                    'Atualizado!',
+                    'O mentor foi atualizado com sucesso.',
+                    'success'
+                ).then(function() {
+                    carregarMentores();
+                });
+            },
+            error: function(error) {
+                Swal.fire(
+                    'Erro!',
+                    'Houve um problema ao atualizar o mentor.',
+                    'error'
+                );
+            }
+        });
+    });
+</script>
+</body>
+</html>

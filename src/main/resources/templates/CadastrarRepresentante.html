@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Representante</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- SweetAlert2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background-image: url("../lala.png"); /* Ajuste o caminho conforme necessário */
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* Adiciona transparência ao fundo do container */
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px; /* Ajuste conforme necessário */
+            margin-left: auto; /* Centraliza horizontalmente */
+            margin-right: auto; /* Centraliza horizontalmente */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 50%; /* Define a largura do container */
+            max-width: 600px; /* Define uma largura máxima para garantir que não fique muito grande em telas maiores */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Cadastro de Representante</h2>
+    <form id="cadastroRepresentanteForm">
+        <div class="form-group">
+            <label for="nome">Nome:</label>
+            <input type="text" class="form-control" id="nome" name="nome" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="empresaId">Empresa:</label>
+            <select class="form-control" id="empresaId" name="empresaId" required>
+                <!-- As opções serão carregadas aqui -->
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+        <button type="button" class="btn btn-dark" onclick="window.history.back();">Voltar</button>
+    </form>
+</div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('http://localhost:8085/empresas') // Ajuste a URL conforme necessário
+            .then(response => response.json())
+            .then(data => {
+                const selectEmpresa = document.getElementById('empresaId');
+                data.forEach(empresa => {
+                    let option = new Option(empresa.nome, empresa.id);
+                    selectEmpresa.add(option);
+                });
+            })
+            .catch(error => console.error('Erro ao carregar as empresas:', error));
+    });
+
+    document.getElementById('cadastroRepresentanteForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Impede o envio padrão do formulário
+
+        const nome = document.getElementById('nome').value;
+        const email = document.getElementById('email').value;
+        const empresaId = document.getElementById('empresaId').value;
+
+        // Validação básica do lado do cliente
+        if (!nome || !email || !empresaId) {
+            Swal.fire('Erro', 'Por favor, preencha todos os campos.', 'error');
+            return;
+        }
+
+        // Preparação dos dados para envio
+        const representanteData = { nome, email, empresaId };
+
+        // Confirmação dos dados com SweetAlert, incluindo a exibição dos dados para confirmação
+        Swal.fire({
+            title: 'Você tem certeza?',
+            html: `<p>Confira os dados antes de prosseguir com o cadastro:</p>
+               <p>Nome: <strong>${nome}</strong></p>
+               <p>Email: <strong>${email}</strong></p>
+               <p>Empresa ID: <strong>${empresaId}</strong></p>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, cadastrar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Envio dos dados para o servidor via Fetch API
+                fetch(`http://localhost:8085/representantes/representantes/${empresaId}`, { // Ajuste a URL conforme necessário
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(representanteData),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Sucesso', 'Representante cadastrado com sucesso.', 'success')
+                            .then(() => {
+                                window.location.href = 'GerenciarRepresentante.html'; // Redireciona para a página de gerenciamento de representantes
+                            });
+                    })
+                    .catch((error) => {
+                        Swal.fire('Erro', 'Erro ao cadastrar representante: ' + error, 'error');
+                    });
+            }
+        });
+    });
+</script>
+</body>
+</html>

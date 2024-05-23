@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Mentor</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- SweetAlert2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .bg-image {
+            background-image: url("../lala.png");
+            background-size: cover;
+            background-position: center;
+        }
+        .horizontal-form {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 50px;
+            color: #333;
+        }
+        .btn-custom {
+            background-color: #0d2c5b;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .btn-custom:hover {
+            background-color: #09223b;
+        }
+    </style>
+</head>
+<body class="bg-image">
+
+<div class="container-fluid h-100">
+    <div class="row justify-content-center align-items-center h-100">
+        <div class="col-md-6">
+            <div class="horizontal-form">
+                <h2 class="text-center mb-4">Cadastrar Novo Mentor</h2>
+                <form id="mentorForm">
+                    <div class="form-group">
+                        <label for="nomeMentor">Nome</label>
+                        <input type="text" class="form-control" id="nomeMentor" placeholder="Nome do Mentor" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailMentor">Email</label>
+                        <input type="email" class="form-control" id="emailMentor" placeholder="Email do Mentor" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="especialidadeMentor">Especialidade</label>
+                        <input type="text" class="form-control" id="especialidadeMentor" placeholder="Especialidade do Mentor" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empresaMentor">Empresa</label>
+                        <select class="form-control" id="empresaMentor" required>
+                            <option value="">Selecione a empresa</option>
+                            <!-- As opções serão preenchidas aqui -->
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inicioHorario">Horário de Início</label>
+                            <input type="time" class="form-control" id="inicioHorario" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="fimHorario">Horário de Fim</label>
+                            <input type="time" class="form-control" id="fimHorario" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="diaDaSemana">Dia da Semana</label>
+                        <select class="form-control" id="diaDaSemana" required>
+                            <option value="">Selecione o dia</option>
+                            <option value="Segunda-feira">Segunda-feira</option>
+                            <option value="Terça-feira">Terça-feira</option>
+                            <option value="Quarta-feira">Quarta-feira</option>
+                            <option value="Quinta-feira">Quinta-feira</option>
+                            <option value="Sexta-feira">Sexta-feira</option>
+                        </select>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-custom">Cadastrar</button>
+                        <a href="index.html" class="btn btn-dark">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('http://localhost:8085/empresas') // Substitua pela URL correta do seu backend
+            .then(response => response.json())
+            .then(data => {
+                const selectEmpresa = document.getElementById('empresaMentor');
+                data.forEach(empresa => {
+                    let option = new Option(empresa.nome, empresa.id);
+                    selectEmpresa.add(option);
+                });
+            })
+            .catch(error => console.error('Erro ao carregar empresas:', error));
+    });
+
+    document.getElementById('mentorForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Impede o envio padrão do formulário
+
+        // Captura os valores do formulário
+        const mentorData = {
+            nome: document.getElementById('nomeMentor').value,
+            email: document.getElementById('emailMentor').value,
+            especialidade: document.getElementById('especialidadeMentor').value,
+            horarios: [{
+                inicio: document.getElementById('inicioHorario').value,
+                fim: document.getElementById('fimHorario').value,
+                diaDaSemana: document.getElementById('diaDaSemana').value
+            }]
+        };
+        const empresaId = document.getElementById('empresaMentor').value;
+
+        // Confirmação antes do envio
+        Swal.fire({
+            title: 'Confirma o cadastro do mentor?',
+            showCancelButton: true,
+            confirmButtonText: 'Sim, cadastrar!',
+            cancelButtonText: 'Cancelar',
+            icon: 'question'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Substitua a URL abaixo pelo endpoint do seu backend
+                fetch(`http://localhost:8085/mentores?empresaId=${empresaId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(mentorData),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Falha ao cadastrar mentor');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Sucesso!', 'Mentor cadastrado com sucesso.', 'success').then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = 'GerenciarMentor.html'; // Redireciona para a página de gerenciamento
+                            }
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire('Erro!', error.message, 'error');
+                    });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

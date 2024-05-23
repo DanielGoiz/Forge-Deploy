@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Desafios</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- SweetAlert2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .bg-image {
+            background-image: url("../lala.png"); /* Ajuste o caminho conforme necessário */
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            padding-top: 20px;
+            background-color: rgba(255, 255, 255, 0.8); /* Transparência ajustada para 0.8 */
+            border-radius: 10px; /* Arredonda os cantos */
+            margin-top: 30px; /* Afasta do topo da página */
+            padding-bottom: 7px;
+        }
+        .btn-custom {
+            padding: 0.25rem 0.5rem; /* Reduz o padding */
+            font-size: 0.875rem; /* Ajusta o tamanho da fonte */
+        }
+        .btn-custom:not(:last-child) {
+            margin-right: 5px; /* Adiciona um espaço à direita de cada botão, exceto o último */
+        }
+    </style>
+</head>
+<body class="bg-image">
+<div class="container">
+    <h2>Gerenciar Desafios</h2>
+    <input class="form-control" id="searchInput" type="text" placeholder="Pesquisar...">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Desafio</th>
+            <th>Tecnologia</th>
+            <th>Mentor</th>
+            <th>Empresa</th>
+        </tr>
+        </thead>
+        <tbody id="desafiosTableBody">
+        <!-- Os desafios serão carregados aqui -->
+        </tbody>
+    </table>
+    <div class="mb-3">
+        <button class="btn btn-primary btn-custom" onclick="window.location.href='cadastrarDesafio.html';">Cadastrar Novo Desafio</button>
+        <button class="btn btn-secondary btn-custom" onclick="window.history.back();">Voltar</button>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchDesafios();
+    });
+
+    function fetchDesafios() {
+        fetch('http://localhost:8085/desafios') // Ajuste a URL conforme necessário
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('desafiosTableBody');
+                tableBody.innerHTML = ''; // Limpa a tabela antes de adicionar novos desafios
+                data.forEach(desafio => {
+                    const row = `<tr>
+                                <td>${desafio.desafio}</td>
+                                <td>${desafio.tecnologia}</td>
+                                <td>${desafio.mentor}</td>
+                                <td>${desafio.empresa}</td>
+                                <td style="display: flex;">
+                                    <button class="btn btn-info btn-sm btn-custom">Anexar Material Didático</button>
+                                    <button class="btn btn-primary btn-sm btn-custom">Editar</button>
+                                    <button class="btn btn-danger btn-sm btn-custom" data-id="${desafio.id}" onclick="excluirDesafio(this)">Excluir</button>
+                                </td>
+                             </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            })
+            .catch(error => console.error('Erro ao carregar desafios:', error));
+    }
+
+    function excluirDesafio(element) {
+        const desafioId = element.getAttribute('data-id');
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: "Você não poderá reverter isso!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, excluir!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`http://localhost:8085/desafios/${desafioId}`, {
+                    method: 'DELETE',
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Falha ao excluir desafio');
+                        }
+                        // Verifica se a resposta é de sucesso sem esperar um corpo de resposta
+                        if (response.status === 204 || response.status === 200) {
+                            Swal.fire(
+                                'Excluído!',
+                                'O desafio foi excluído.',
+                                'success'
+                            );
+                            fetchDesafios(); // Recarrega a lista de desafios
+                            return;
+                        }
+                        // Se o servidor responder com um corpo de resposta, tenta analisar como JSON
+                        return response.json();
+                    })
+                    .catch(error => {
+                        console.error('Erro ao excluir desafio:', error);
+                        Swal.fire(
+                            'Erro!',
+                            'Não foi possível excluir o desafio.',
+                            'error'
+                        );
+                    });
+            }
+        });
+    }
+</script>
+</body>
+</html>

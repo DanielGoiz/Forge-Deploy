@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Empresas</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        /* Estilo personalizado */
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .background {
+            background-image: url("../lala.png");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px;
+            max-height: 90%; /* Limita a altura máxima */
+            overflow-y: auto; /* Adiciona barra de rolagem vertical se necessário */
+        }
+    </style>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('http://localhost:8085/empresas')
+                .then(response => response.json())
+                .then(empresas => {
+                    const tableBody = document.getElementById('empresasTableBody');
+                    empresas.forEach(empresa => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                    <td>${empresa.nome}</td>
+                    <td>${empresa.cnpj}</td>
+                    <td>${empresa.email}</td>
+                    <td>${empresa.endereco}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="${empresa.id}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
+                        tableBody.appendChild(row);
+                    });
+
+                    document.querySelectorAll('.delete-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const empresaId = this.getAttribute('data-id');
+                            Swal.fire({
+                                title: 'Deletar essa empresa?',
+                                text: "Você não poderá reverter isso!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Sim, deletar essa empresa!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    fetch(`http://localhost:8085/empresas/${empresaId}`, {
+                                        method: 'DELETE'
+                                    })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                Swal.fire(
+                                                    'Deletado!',
+                                                    'A empresa foi deletada.',
+                                                    'success'
+                                                ).then(() => {
+                                                    window.location.reload(); // Recarrega a página para atualizar a lista
+                                                });
+                                            } else {
+                                                Swal.fire(
+                                                    'Erro!',
+                                                    'Erro ao deletar empresa.',
+                                                    'error'
+                                                );
+                                            }
+                                        })
+                                        .catch(error => {
+                                            Swal.fire(
+                                                'Erro!',
+                                                'Erro ao deletar empresa: ' + error,
+                                                'error'
+                                            );
+                                        });
+                                }
+                            });
+                        });
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar as empresas:', error));
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Código existente para carregar as empresas...
+
+            // Script para filtrar empresas
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const tableRows = document.getElementById('empresasTableBody').getElementsByTagName('tr');
+                Array.from(tableRows).forEach(function(row) {
+                    const nomeEmpresa = row.cells[0].textContent.toLowerCase();
+                    if(nomeEmpresa.indexOf(searchTerm) > -1) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="background">
+    <div class="container mt-5">
+        <h2>Empresas Cadastradas</h2>
+        <!-- Campo de pesquisa -->
+        <label for="searchInput"></label><input type="text" id="searchInput" class="form-control mb-3" placeholder="Pesquisar empresa...">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+            <tr>
+                <th>Nome</th>
+                <th>CNPJ</th>
+                <th>Email</th>
+                <th>Endereço</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody id="empresasTableBody">
+            <!-- As linhas da tabela serão inseridas aqui pelo JavaScript -->
+            </tbody>
+        </table>
+        <a href="Criar.html" class="btn btn-primary mb-3">Adicionar Nova Empresa</a>
+        <a href="javascript:history.back()" class="btn btn-dark mb-3">Voltar</a>
+    </div>
+</div>
+
+<!-- JavaScript para carregar os dados das empresas -->
+
+
+<!-- Optional JavaScript -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

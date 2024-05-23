@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Forge</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .bg-image {
+            background-image: url("../lala.png");
+            background-size: cover;
+            background-position: center;
+        }
+        .menu-container {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            display: flex;
+            flex-direction: column; /* Mantém a organização vertical para os grupos */
+            align-items: center; /* Centraliza os grupos */
+        }
+        .link-group {
+            display: flex; /* Cria uma linha flexível para cada grupo de links */
+            justify-content: center; /* Centraliza os links na linha */
+            flex-wrap: wrap; /* Permite que os itens se ajustem conforme necessário */
+            width: 100%; /* Usa toda a largura disponível */
+        }
+        .menu-container a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px; /* Ajusta a fonte */
+            margin: 5px; /* Ajuste para espaçamento entre links */
+            padding: 10px;
+            background-color: #0d2c5b;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            text-align: center; /* Garante que o texto esteja centralizado dentro do link */
+            flex: 1; /* Faz com que os links dentro de um grupo ocupem espaço igual */
+            min-width: 160px; /* Define uma largura mínima para cada link */
+            white-space: nowrap; /* Evita a quebra de texto */
+        }
+        .menu-container a:hover {
+            background-color: #09223b;
+        }
+        h2 {
+            margin-bottom: 20px; /* Ajuste o valor conforme necessário */
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-image d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="menu-container">
+        <h2>Bem-vindo, Luis Gomes!</h2>
+        <div class="link-group">
+            <a href="Criar.html">Cadastrar Empresa</a>
+            <a href="Gerenciar.html">Gerenciar Empresas</a>
+        </div>
+        <div class="link-group">
+            <a href="CadastrarMentor.html">Cadastrar Mentor</a>
+            <a href="GerenciarMentor.html">Gerenciar Mentor</a>
+        </div>
+        <div class="link-group">
+            <a href="CadastrarRepresentante.html">Cadastrar Representante</a>
+            <a href="GerenciarRepresentante.html">Gerenciar Representante</a>
+        </div>
+        <div class="link-group">
+            <a href="CadastrarDesafio.html">Cadastrar Desafio</a>
+            <a href="GerenciarDesafios.html">Gerenciar Desafios</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

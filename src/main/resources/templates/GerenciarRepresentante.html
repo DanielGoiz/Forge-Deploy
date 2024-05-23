@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciamento de Representantes</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- SweetAlert2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background-image: url("../lala.png"); /* Ajuste o caminho conforme necessário */
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* Adiciona transparência ao fundo do container */
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 50px; /* Ajuste conforme necessário */
+            margin-left: auto; /* Centraliza horizontalmente */
+            margin-right: auto; /* Centraliza horizontalmente */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 80%; /* Define a largura do container */
+            max-width: 960px; /* Define uma largura máxima para garantir que não fique muito grande em telas maiores */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Gerenciamento de Representantes</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Empresa</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody id="representantesList">
+        <!-- Os representantes serão carregados aqui -->
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-primary" onclick="window.location.href='cadastrarRepresentante.html';">Adicionar Novo Representante</button>
+    <button type="button" class="btn btn-dark" onclick="window.history.back();">Voltar</button>
+</div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('http://localhost:8085/representantes') // Ajuste a URL conforme necessário
+            .then(response => response.json())
+            .then(data => {
+                const representantesList = document.getElementById('representantesList');
+                data.forEach(representante => {
+                    let row = representantesList.insertRow();
+                    row.insertCell(0).innerHTML = representante.nome;
+                    row.insertCell(1).innerHTML = representante.email;
+                    row.insertCell(2).innerHTML = representante.empresa.nome; // Ajuste conforme a estrutura de dados
+                    let deleteCell = row.insertCell(3);
+                    let deleteButton = document.createElement('button');
+                    deleteButton.className = 'btn btn-danger';
+                    deleteButton.innerHTML = 'Excluir';
+                    deleteButton.onclick = function() {
+                        deleteRepresentante(representante.id);
+                    };
+                    deleteCell.appendChild(deleteButton);
+                });
+            })
+            .catch(error => console.error('Erro ao carregar os representantes:', error));
+    });
+
+    function deleteRepresentante(id) {
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: "Você não poderá reverter isso!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, delete!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`http://localhost:8085/representantes/${id}`, {
+                    method: 'DELETE',
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Falha ao excluir representante');
+                        }
+                        // Verifica se a resposta não está vazia antes de tentar analisar o JSON
+                        if (response.status === 204 || response.statusText === 'No Content') { // 204 No Content é um status comum para respostas de DELETE bem-sucedidas
+                            return {}; // Retorna um objeto vazio ou algum valor padrão adequado
+                        } else {
+                            return response.json();
+                        }
+                    })
+                    .then(() => {
+                        Swal.fire(
+                            'Deletado!',
+                            'O representante foi deletado.',
+                            'success'
+                        ).then(() => {
+                            window.location.reload(); // Recarrega a página para atualizar a lista
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire('Erro', 'Erro ao excluir representante: ' + error, 'error');
+                    });
+            }
+        })
+    }
+</script>
+</body>
+</html>

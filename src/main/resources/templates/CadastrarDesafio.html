@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Desafio</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- SweetAlert2 -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .bg-image {
+            background-image: url("../lala.png"); /* Ajuste o caminho conforme necessário */
+            background-size: cover;
+            background-position: center;
+        }
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.8); /* Adiciona transparência ao fundo do container */
+            border-radius: 10px;
+            padding: 40px;
+            margin-top: 50px; /* Ajuste conforme necessário */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-image">
+<div class="container form-container">
+    <h2>Cadastro de Desafio</h2>
+    <form id="cadastroDesafioForm">
+        <div class="form-group">
+            <label for="desafio">Desafio:</label>
+            <input type="text" class="form-control" id="desafio" required>
+        </div>
+        <div class="form-group">
+            <label for="tecnologia">Tecnologias:</label>
+            <input type="text" class="form-control" id="tecnologia" required>
+        </div>
+        <div class="form-group">
+            <label for="mentor">Mentor:</label>
+            <select class="form-control" id="mentor" required>
+                <option value="" disabled selected>Selecione um mentor</option>
+                <!-- As opções de mentores serão carregadas aqui -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="empresa">Empresa:</label>
+            <select class="form-control" id="empresa" required>
+                <option value="" disabled selected>Selecione uma empresa</option>
+                <!-- As opções de empresas serão carregadas aqui -->
+            </select>
+        </div>
+        <!-- Adicione mais campos conforme necessário -->
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+        <a href="index.html" class="btn btn-dark">Voltar</a>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchMentores();
+        fetchEmpresas();
+    });
+
+    function fetchMentores() {
+        fetch('http://localhost:8085/mentores') // Ajuste a URL conforme necessário
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('mentor');
+                data.forEach(mentor => {
+                    const option = document.createElement('option');
+                    option.value = mentor.id; // Supondo que a resposta inclua um 'id'
+                    option.textContent = mentor.nome; // Supondo que a resposta inclua um 'nome'
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Erro ao carregar mentores:', error));
+    }
+
+    function fetchEmpresas() {
+        fetch('http://localhost:8085/empresas') // Ajuste a URL conforme necessário
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('empresa');
+                data.forEach(empresa => {
+                    const option = document.createElement('option');
+                    option.value = empresa.id; // Supondo que a resposta inclua um 'id'
+                    option.textContent = empresa.nome; // Supondo que a resposta inclua um 'nome'
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Erro ao carregar empresas:', error));
+    }
+</script>
+<script>
+    document.getElementById('cadastroDesafioForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const desafio = document.getElementById('desafio').value;
+        const tecnologia = document.getElementById('tecnologia').value;
+        const mentorId = document.getElementById('mentor').value; // Captura o valor (id) do mentor selecionado
+        const empresaId = document.getElementById('empresa').value; // Captura o valor (id) da empresa selecionada
+
+        Swal.fire({
+            title: 'Confirma o cadastro deste desafio?',
+            text: `Desafio: ${desafio}\nTecnologia: ${tecnologia}\nMentor ID: ${mentorId}\nEmpresa ID: ${empresaId}`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, cadastrar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`http://localhost:8085/desafios?mentorId=${mentorId}&empresaId=${empresaId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        desafio,
+                        tecnologia
+                    }),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        Swal.fire(
+                            'Cadastrado!',
+                            'Desafio cadastrado com sucesso.',
+                            'success'
+                        ).then(() => {
+                            window.location.href = 'GerenciarDesafios.html'; // Ajuste o caminho conforme necessário
+                        });
+                    })
+                    .catch(() => {
+                        Swal.fire(
+                            'Erro!',
+                            'Erro ao cadastrar desafio. Por favor, tente novamente.',
+                            'error'
+                        );
+                    });
+            }
+        });
+    });
+</script>
+</body>
+</html>
