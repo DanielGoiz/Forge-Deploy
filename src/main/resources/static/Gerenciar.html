@@ -35,7 +35,7 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            fetch('http://localhost:8085/empresas')
+            fetch('https://forge-deploy.onrender.com/empresas')
                 .then(response => response.json())
                 .then(empresas => {
                     const tableBody = document.getElementById('empresasTableBody');
@@ -68,7 +68,7 @@
                                 confirmButtonText: 'Sim, deletar essa empresa!'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    fetch(`http://localhost:8085/empresas/${empresaId}`, {
+                                    fetch(`https://forge-deploy.onrender.com/empresas/${empresaId}`, {
                                         method: 'DELETE'
                                     })
                                         .then(response => {

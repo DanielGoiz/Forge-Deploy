@@ -76,7 +76,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // Implemente o envio dos dados aqui, como uma requisição AJAX ou fetch API
-                fetch("http://localhost:8085/empresas/cadastrar-empresa", {
+                fetch("https://forge-deploy.onrender.com/empresas/cadastrar-empresa", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
