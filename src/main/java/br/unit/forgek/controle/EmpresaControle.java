@@ -10,7 +10,7 @@ import org.springframework.ui.Model;
 
 @RestController
 @RequestMapping("/empresas")
-@CrossOrigin(origins = "http://localhost:63342")
+
 public class EmpresaControle {
 
     private final EmpresaServico empresaServico;
