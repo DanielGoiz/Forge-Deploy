@@ -86,8 +86,10 @@
                         </select>
                     </div>
                     <div class="text-center">
+                        <div class="form-group d-flex justify-content-between">
                         <button type="submit" class="btn btn-custom">Cadastrar</button>
                         <a href="javascript:history.back()" class="btn btn-dark mb-3">Voltar</a>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -98,7 +100,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        fetch('http://localhost:8085/empresas') // Substitua pela URL correta do seu backend
+        fetch('https://forge-deploy.onrender.com/empresas') // Substitua pela URL correta do seu backend
             .then(response => response.json())
             .then(data => {
                 const selectEmpresa = document.getElementById('empresaMentor');
@@ -136,7 +138,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // Substitua a URL abaixo pelo endpoint do seu backend
-                fetch(`http://localhost:8085/mentores?empresaId=${empresaId}`, {
+                fetch(`https://forge-deploy.onrender.com/mentores?empresaId=${empresaId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

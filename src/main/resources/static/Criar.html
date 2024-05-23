@@ -47,8 +47,10 @@
                     <label for="email">Email:</label>
                     <input type="email" class="form-control" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
                 </div>
-                <button type="submit" class="btn btn-primary">Cadastrar</button>
-                <a href="javascript:history.back()" class="btn btn-dark mb-3">Voltar</a>
+                <div class="form-group d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                    <a href="javascript:history.back()" class="btn btn-dark mb-3">Voltar</a>
+                </div>
             </form>
         </div>
     </div>
@@ -96,7 +98,7 @@
                             'success'
                         ).then(() => {
                             setTimeout(function() {
-                                window.location.href = 'gerenciar.html'; // Ajuste conforme necessário
+                                window.location.href = 'Gerenciar.html'; // Ajuste conforme necessário
                             }, 1000); // Delay de 2000 milissegundos (2 segundos)
                         });
                     })

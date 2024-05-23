@@ -44,8 +44,10 @@
         <!-- Os representantes serão carregados aqui -->
         </tbody>
     </table>
+    <div class="form-group d-flex justify-content-between">
     <button type="button" class="btn btn-primary" onclick="window.location.href='cadastrarRepresentante.html';">Adicionar Novo Representante</button>
     <button type="button" class="btn btn-dark" onclick="window.history.back();">Voltar</button>
+    </div>
 </div>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -54,7 +56,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        fetch('http://localhost:8085/representantes') // Ajuste a URL conforme necessário
+        fetch('https://forge-deploy.onrender.com/representantes') // Ajuste a URL conforme necessário
             .then(response => response.json())
             .then(data => {
                 const representantesList = document.getElementById('representantesList');
@@ -87,7 +89,7 @@
             confirmButtonText: 'Sim, delete!'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://localhost:8085/representantes/${id}`, {
+                fetch(`https://forge-deploy.onrender.com/representantes/${id}`, {
                     method: 'DELETE',
                 })
                     .then(response => {

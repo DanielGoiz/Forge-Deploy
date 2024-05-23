@@ -52,9 +52,10 @@
                 <!-- As opções de empresas serão carregadas aqui -->
             </select>
         </div>
-        <!-- Adicione mais campos conforme necessário -->
+        <div class="form-group d-flex justify-content-between">
         <button type="submit" class="btn btn-primary">Cadastrar</button>
         <a href="javascript:history.back()" class="btn btn-dark mb-3">Voltar</a>
+        </div>
     </form>
 </div>
 <script>
@@ -64,7 +65,7 @@
     });
 
     function fetchMentores() {
-        fetch('http://localhost:8085/mentores') // Ajuste a URL conforme necessário
+        fetch('https://forge-deploy.onrender.com/mentores') // Ajuste a URL conforme necessário
             .then(response => response.json())
             .then(data => {
                 const select = document.getElementById('mentor');
@@ -79,7 +80,7 @@
     }
 
     function fetchEmpresas() {
-        fetch('http://localhost:8085/empresas') // Ajuste a URL conforme necessário
+        fetch('https://forge-deploy.onrender.com/empresas') // Ajuste a URL conforme necessário
             .then(response => response.json())
             .then(data => {
                 const select = document.getElementById('empresa');
@@ -113,7 +114,7 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://localhost:8085/desafios?mentorId=${mentorId}&empresaId=${empresaId}`, {
+                fetch(`https://forge-deploy.onrender.com/desafios?mentorId=${mentorId}&empresaId=${empresaId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

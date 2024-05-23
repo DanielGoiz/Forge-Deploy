@@ -51,8 +51,10 @@
         </tbody>
 
     </table>
+    <div class="form-group d-flex justify-content-between">
     <a href="CadastrarMentor.html" class="btn btn-primary mb-3">Adicionar Novo Mentor</a>
     <a href="javascript:history.back()" class="btn btn-dark mb-3">Voltar</a>
+    </div>
 </div>
 <!-- Modal de Edição de Mentor -->
 <div class="modal fade" id="editMentorModal" tabindex="-1" role="dialog" aria-labelledby="editMentorModalLabel" aria-hidden="true">
@@ -117,7 +119,7 @@
     $(document).ready(function() {
         function carregarMentores() {
             $.ajax({
-                url: 'http://localhost:8085/mentores', // Ajuste para a URL do seu endpoint
+                url: 'https://forge-deploy.onrender.com/mentores', // Ajuste para a URL do seu endpoint
                 type: 'GET',
                 success: function(mentores) {
                     var mentorTableBody = $('#mentorTableBody');
@@ -157,7 +159,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: 'http://localhost:8085/mentores/' + mentorId, // Ajuste para a URL do seu endpoint
+                            url: 'https://forge-deploy.onrender.com/mentores/' + mentorId, // Ajuste para a URL do seu endpoint
                             type: 'DELETE',
                             success: function() {
                                 Swal.fire(
@@ -197,7 +199,7 @@
             var mentorId = $(this).data('id');
             // Buscar os detalhes do mentor pelo ID
             $.ajax({
-                url: 'http://localhost:8085/mentores/' + mentorId, // Ajuste para a URL do seu endpoint
+                url: 'https://forge-deploy.onrender.com/mentores/' + mentorId, // Ajuste para a URL do seu endpoint
                 type: 'GET',
                 success: function(mentor) {
                     // Preencher o formulário do modal com os dados do mentor
@@ -229,7 +231,7 @@
             horarioFim: $('#mentorHorarioFim').val()
         };
         $.ajax({
-            url: 'http://localhost:8085/mentores/' + mentorId, // Ajuste para a URL do seu endpoint
+            url: 'https://forge-deploy.onrender.com/mentores/' + mentorId, // Ajuste para a URL do seu endpoint
             type: 'PUT', // Ou PATCH, dependendo de como o backend espera receber a requisição
             contentType: 'application/json',
             data: JSON.stringify(mentorData),

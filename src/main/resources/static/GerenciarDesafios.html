@@ -50,9 +50,10 @@
         <!-- Os desafios serão carregados aqui -->
         </tbody>
     </table>
-    <div class="mb-3">
+    <div class="mb-3 d-flex justify-content-between">
         <button class="btn btn-primary btn-custom" onclick="window.location.href='cadastrarDesafio.html';">Cadastrar Novo Desafio</button>
         <button class="btn btn-secondary btn-custom" onclick="window.history.back();">Voltar</button>
+    </div>
     </div>
 </div>
 <script>
@@ -61,7 +62,7 @@
     });
 
     function fetchDesafios() {
-        fetch('http://localhost:8085/desafios') // Ajuste a URL conforme necessário
+        fetch('https://forge-deploy.onrender.com/desafios') // Ajuste a URL conforme necessário
             .then(response => response.json())
             .then(data => {
                 const tableBody = document.getElementById('desafiosTableBody');
@@ -96,7 +97,7 @@
             confirmButtonText: 'Sim, excluir!'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://localhost:8085/desafios/${desafioId}`, {
+                fetch(`https://forge-deploy.onrender.com/desafios/${desafioId}`, {
                     method: 'DELETE',
                 })
                     .then(response => {
