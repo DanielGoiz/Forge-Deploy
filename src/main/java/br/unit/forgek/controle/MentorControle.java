@@ -12,7 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:63342")
+
 @RestController
 @RequestMapping("/mentores")
 public class MentorControle {

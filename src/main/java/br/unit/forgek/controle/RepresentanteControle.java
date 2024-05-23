@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-@CrossOrigin(origins = "http://localhost:63342")
+
 @RestController
 @RequestMapping("/representantes") // Define a base path para todos os métodos deste controlador
 @Controller
