@@ -4,7 +4,6 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-RUN apt-get install maven -y
 RUN mvn clean install -DskipTests
 
 FROM amazoncorretto:17
